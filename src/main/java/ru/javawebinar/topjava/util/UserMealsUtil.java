@@ -7,9 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +25,7 @@ public class UserMealsUtil {
                 new UserMeal(LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510)
         );
         System.out.println(getFilteredWithExceeded(mealList, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
+        System.out.println(getFilteredWithExceededLoop(mealList, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
 //        .toLocalDate();
 //        .toLocalTime();
     }
@@ -43,14 +42,35 @@ public class UserMealsUtil {
 
 
         return mealList.stream()
-                .filter(um -> {
-                    LocalTime time = um.getDateTime().toLocalTime();
-                    return time.isAfter(startTime) && time.isBefore(endTime);
-                })
+                .filter(um -> TimeUtil.isBetween(um.getDateTime().toLocalTime(), startTime, endTime))
                 .map(um -> new UserMealWithExceed(um.getDateTime(),
                         um.getDescription(),
                         um.getCalories(),
                         caloriesByDate.get(um.getDateTime().toLocalDate()) > caloriesPerDay))
                 .collect(Collectors.toList());
+    }
+
+    public static List<UserMealWithExceed> getFilteredWithExceededLoop(List<UserMeal> mealList, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+
+        Map<LocalDate, Integer> caloriesByDate = new HashMap<>();
+
+        for (UserMeal um : mealList) {
+            caloriesByDate.merge(um.getDateTime().toLocalDate(), um.getCalories(), Integer::sum);
+        }
+
+        List<UserMealWithExceed> result = new ArrayList<>(mealList.size());
+        for (UserMeal um : mealList) {
+            if (!TimeUtil.isBetween(um.getDateTime().toLocalTime(), startTime, endTime)) {
+                continue;
+            }
+            result.add(new UserMealWithExceed(
+                    um.getDateTime(),
+                    um.getDescription(),
+                    um.getCalories(),
+                    caloriesByDate.get(um.getDateTime().toLocalDate()) > caloriesPerDay)
+            );
+        }
+
+        return result;
     }
 }
