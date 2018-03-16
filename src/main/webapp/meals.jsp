@@ -33,8 +33,7 @@
     </tr>
     <c:forEach var="meal" items="${mealWithExceed}">
         <tr
-                <c:if test="${meal.isExceed()}">class="meal-tbl__exceed" </c:if>
-                <c:if test="${!meal.isExceed()}">class="meal-tbl__notexceed" </c:if>
+                class="<c:out value="${meal.isExceed() ? 'meal-tbl__exceed' : 'meal-tbl__notexceed'}" />"
         >
             <td>
                 <javatime:format value="${meal.getDateTime()}" style="MS"/>
