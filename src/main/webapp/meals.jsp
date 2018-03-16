@@ -30,6 +30,8 @@
         <th>Дата</th>
         <th>Описание</th>
         <th>Калории</th>
+        <th></th>
+        <th></th>
     </tr>
     <c:forEach var="meal" items="${mealWithExceed}">
         <tr
@@ -40,8 +42,12 @@
             </td>
             <td>${meal.getDescription()}</td>
             <td>${meal.getCalories()}</td>
+            <td><a href="meals?action=edit&id=<c:out value="${meal.getId()}"/>">Update</a></td>
+            <td><a href="meals?action=delete&id=<c:out value="${meal.getId()}"/>">Delete</a></td>
         </tr>
     </c:forEach>
 </table>
+<br/>
+<a href="meals?action=insert">Add new meal</a>
 </body>
 </html>
