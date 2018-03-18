@@ -48,7 +48,7 @@ public class MealServlet extends HttpServlet {
             request.setAttribute("meal", meal);
 
         } else if (action.equalsIgnoreCase("listMeals") || action.isEmpty()) {
-
+            forward = LIST_MEALS;
         } else {
             forward = INSERT_OR_EDIT;
         }
