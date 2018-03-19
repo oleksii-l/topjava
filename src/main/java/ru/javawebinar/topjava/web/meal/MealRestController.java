@@ -1,17 +1,21 @@
 package ru.javawebinar.topjava.web.meal;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.AuthorizedUser;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
-import ru.javawebinar.topjava.service.MealServiceImpl;
 import ru.javawebinar.topjava.to.MealWithExceed;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.Collection;
 
+@Controller
 public class MealRestController {
-    private MealService service = new MealServiceImpl();
+
+    @Autowired
+    private MealService service;
 
     public Meal save(Meal meal, int userId) {
         checkIfUserAuthorized(userId);
