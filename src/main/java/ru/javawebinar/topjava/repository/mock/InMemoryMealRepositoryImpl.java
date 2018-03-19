@@ -17,19 +17,19 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     private AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.MEALS.forEach(this::save);
+        MealsUtil.MEALS.forEach(meal -> this.save(meal, AuthorizedUser.id()));
     }
 
     @Override
-    public Meal save(Meal meal) {
+    public Meal save(Meal meal, int userId) {
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            repository.computeIfAbsent(AuthorizedUser.id(), key -> new ConcurrentHashMap<>())
+            repository.computeIfAbsent(userId, key -> new ConcurrentHashMap<>())
                     .put(meal.getId(), meal);
             return meal;
         }
         // treat case: update, but absent in storage
-        Map<Integer, Meal> mealByUser = repository.computeIfPresent(AuthorizedUser.id(),
+        Map<Integer, Meal> mealByUser = repository.computeIfPresent(userId,
                 (k, v) -> v);
         mealByUser.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
         return meal;
