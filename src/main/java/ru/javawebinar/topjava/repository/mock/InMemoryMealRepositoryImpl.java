@@ -6,8 +6,8 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,16 +24,17 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
+
+        // search basket. if absent - create new
+        repository.computeIfAbsent(userId, key -> new ConcurrentHashMap<>());
+
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            repository.computeIfAbsent(userId, key -> new ConcurrentHashMap<>())
-                    .put(meal.getId(), meal);
+            repository.get(userId).put(meal.getId(), meal);
             return meal;
         }
-        // treat case: update, but absent in storage
-        Map<Integer, Meal> mealByUser = repository.computeIfPresent(userId,
-                (k, v) -> v);
-        mealByUser.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
+
+        repository.get(userId).computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
         return meal;
     }
 
@@ -50,8 +51,8 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     }
 
     @Override
-    public Collection<Meal> getAll(int userId) {
-        return repository.get(userId).values().stream()
+    public List<Meal> getAll(int userId) {
+        return repository.getOrDefault(userId, new HashMap<>()).values().stream()
                 .sorted((o1, o2) -> -o1.getDateTime().compareTo(o2.getDateTime()))
                 .collect(Collectors.toList());
     }
