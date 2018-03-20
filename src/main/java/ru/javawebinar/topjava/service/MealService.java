@@ -8,7 +8,7 @@ public interface MealService {
 
     Meal save(Meal meal, int userId);
 
-    void delete(int id, int userId);
+    boolean delete(int id, int userId);
 
     Meal get(int id, int userId);
 

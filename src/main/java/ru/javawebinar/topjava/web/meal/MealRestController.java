@@ -17,34 +17,20 @@ public class MealRestController {
     @Autowired
     private MealService service;
 
-    public Meal save(Meal meal, int userId) {
-        checkIfUserAuthorized(userId);
-
+    public Meal save(Meal meal) {
         return service.save(meal, AuthorizedUser.id());
     }
 
-    public void delete(int id, int userId) {
-        checkIfUserAuthorized(userId);
-
+    public void delete(int id) {
         service.delete(id, AuthorizedUser.id());
     }
 
-    public Meal get(int id, int userId) {
-        checkIfUserAuthorized(userId);
-
+    public Meal get(int id) {
         return service.get(id, AuthorizedUser.id());
     }
 
-    public Collection<MealWithExceed> getAll(int userId) {
-        checkIfUserAuthorized(userId);
-
+    public Collection<MealWithExceed> getAll() {
         return MealsUtil.getWithExceeded(service.getAll(AuthorizedUser.id()), MealsUtil.DEFAULT_CALORIES_PER_DAY);
-    }
-
-    private void checkIfUserAuthorized(int userId) {
-        if (userId != AuthorizedUser.id()) {
-            throw new NotFoundException("Wrong user");
-        }
     }
 
 }
