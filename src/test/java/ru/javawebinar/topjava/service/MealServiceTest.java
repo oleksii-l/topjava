@@ -16,7 +16,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -46,7 +48,7 @@ public class MealServiceTest {
         Meal created = mealService.create(newMeal, UserTestData.USER_ID);
 
         newMeal.setId(created.getId());
-        List<Meal> expectedResult = new ArrayList();
+        List<Meal> expectedResult = new ArrayList<>();
         expectedResult.add(newMeal);
         expectedResult.addAll(MEALS);
         assertMatch(mealService.getAll(UserTestData.USER_ID), expectedResult);
@@ -89,7 +91,10 @@ public class MealServiceTest {
 
     @Test
     public void getBetweenDates() throws Exception {
-        List<Meal> meals = mealService.getBetweenDates(LocalDate.of(2015, 05, 30), LocalDate.of(2015, 5, 31), USER_ID);
-        assertMatch(meals, MEALS);
+        List<Meal> meals = mealService.getBetweenDates(LocalDate.of(2015, 5, 30), LocalDate.of(2015, 5, 30), USER_ID);
+        assertMatch(meals,
+                MEALS.stream()
+                        .filter(m -> Arrays.asList(100002, 100003, 100004).contains(m.getId()))
+                        .collect(Collectors.toList()));
     }
 }
