@@ -23,9 +23,12 @@ public class MealTestData {
             new Meal(MEAL_SEQ, LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500)
     );
 
+    public static int ADMIN_MEAL_SEQ = START_SEQ + 8;
+    public static final Meal ADMIN_MEAL = new Meal(ADMIN_MEAL_SEQ, LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак_Admin", 500);
+
 
     public static void assertMatch(Meal actual, Meal expected) {
-        assertThat(actual).isEqualToIgnoringGivenFields(expected, "id");
+        assertThat(actual).isEqualTo(expected);
     }
 
     public static void assertMatch(Iterable<Meal> actual, Meal... expected) {
@@ -33,7 +36,7 @@ public class MealTestData {
     }
 
     public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
-        assertThat(actual).usingElementComparatorIgnoringFields("id").isEqualTo(expected);
+        assertThat(actual).usingDefaultElementComparator().isEqualTo(expected);
     }
 
 

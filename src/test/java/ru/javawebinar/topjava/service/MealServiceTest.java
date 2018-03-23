@@ -12,15 +12,14 @@ import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static ru.javawebinar.topjava.MealTestData.MEALS;
-import static ru.javawebinar.topjava.MealTestData.MEAL_SEQ;
-import static ru.javawebinar.topjava.MealTestData.assertMatch;
+import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 @ContextConfiguration({
@@ -38,48 +37,59 @@ public class MealServiceTest {
     }
 
     @Autowired
-    private MealService sut;
+    private MealService mealService;
 
     @Test
     public void create() throws Exception {
         Meal newMeal = new Meal(LocalDateTime.of(2018, Month.MARCH, 22, 10, 0), "new_item", 400);
 
-        Meal created = sut.create(newMeal, UserTestData.USER_ID);
+        Meal created = mealService.create(newMeal, UserTestData.USER_ID);
 
         newMeal.setId(created.getId());
         List<Meal> expectedResult = new ArrayList();
         expectedResult.add(newMeal);
         expectedResult.addAll(MEALS);
-        assertMatch(sut.getAll(UserTestData.USER_ID), expectedResult);
+        assertMatch(mealService.getAll(UserTestData.USER_ID), expectedResult);
     }
 
     @Test
     public void delete() throws Exception {
-        assertEquals(6, sut.getAll(USER_ID).size());
+        assertEquals(6, mealService.getAll(USER_ID).size());
 
-        sut.delete(MEAL_SEQ, USER_ID);
+        mealService.delete(MEAL_SEQ, USER_ID);
 
-        assertEquals(5, sut.getAll(USER_ID).size());
+        assertEquals(5, mealService.getAll(USER_ID).size());
     }
 
     @Test(expected = NotFoundException.class)
     public void notFoundDelete() throws Exception {
-        sut.delete(1, USER_ID);
+        mealService.delete(ADMIN_MEAL_SEQ, USER_ID);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void notFoundUpdate() throws Exception {
+        mealService.update(ADMIN_MEAL, USER_ID);
     }
 
     @Test
     public void get() throws Exception {
-        Meal meal = sut.get(MEAL_SEQ, USER_ID);
+        Meal meal = mealService.get(MEAL_SEQ, USER_ID);
         assertMatch(meal, MEALS.stream().filter(m -> m.getId() == MEAL_SEQ).findFirst().get());
     }
 
     @Test(expected = NotFoundException.class)
     public void getNotFound() throws Exception {
-        sut.get(1, USER_ID);
+        mealService.get(1, USER_ID);
     }
 
     @Test(expected = NotFoundException.class)
     public void getAnotherUserMeal() throws Exception {
-        sut.get(MEAL_SEQ, ADMIN_ID);
+        mealService.get(MEAL_SEQ, ADMIN_ID);
+    }
+
+    @Test
+    public void getBetweenDates() throws Exception {
+        List<Meal> meals = mealService.getBetweenDates(LocalDate.of(2015, 05, 30), LocalDate.of(2015, 5, 31), USER_ID);
+        assertMatch(meals, MEALS);
     }
 }
