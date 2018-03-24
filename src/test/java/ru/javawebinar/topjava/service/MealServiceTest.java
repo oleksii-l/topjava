@@ -4,6 +4,9 @@ import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TestName;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -16,7 +19,9 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.temporal.ChronoUnit;
 
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
@@ -34,6 +39,36 @@ public class MealServiceTest {
     static {
         SLF4JBridgeHandler.install();
     }
+
+
+    private LocalDateTime startTime;
+
+    @Rule
+    public TestName watcher = new TestName() {
+        private String testName;
+
+        @Override
+        protected void starting(Description description) {
+            testName = description.getMethodName();
+            startTime = LocalDateTime.now();
+        }
+
+        @Override
+        protected void finished(Description description) {
+            LocalDateTime endTime = LocalDateTime.now();
+            StringBuilder builder = new StringBuilder();
+            builder.append(getMethodName())
+                    .append(" finished for ")
+                    .append(startTime.until(endTime, ChronoUnit.MILLIS))
+                    .append(" ms");
+
+            System.out.println(builder);
+        }
+
+        public String getMethodName() {
+            return testName;
+        }
+    };
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
