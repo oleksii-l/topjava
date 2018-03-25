@@ -31,12 +31,13 @@ public class JpaMealRepositoryImpl implements MealRepository {
             return meal;
         } else {
             Meal oldMeal = em.find(Meal.class, meal.getId());
-            if (oldMeal.getUser().getId() != userId) {
+            if (oldMeal == null || !ifUserOwnsMeal(oldMeal, userId)) {
                 return null;
             }
             return em.merge(meal);
         }
     }
+
 
     @Override
     @Transactional
@@ -50,7 +51,7 @@ public class JpaMealRepositoryImpl implements MealRepository {
     @Override
     public Meal get(int id, int userId) {
         Meal meal = em.find(Meal.class, id);
-        if (meal.getUser().getId() != userId) {
+        if (meal == null || !ifUserOwnsMeal(meal, userId)) {
             return null;
         }
         return meal;
@@ -70,5 +71,12 @@ public class JpaMealRepositoryImpl implements MealRepository {
                 .setParameter("start_date", startDate)
                 .setParameter("end_date", endDate)
                 .getResultList();
+    }
+
+    private boolean ifUserOwnsMeal(Meal meal, int userId) {
+        if (meal == null || meal.getUser().getId() != userId) {
+            return false;
+        }
+        return true;
     }
 }

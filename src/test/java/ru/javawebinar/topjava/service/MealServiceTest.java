@@ -1,11 +1,11 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.AssumptionViolatedException;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TestName;
-import org.junit.rules.TestWatcher;
+import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -22,6 +22,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
@@ -44,30 +46,36 @@ public class MealServiceTest {
     private LocalDateTime startTime;
 
     @Rule
-    public TestName watcher = new TestName() {
-        private String testName;
+    public Stopwatch watcher = new Stopwatch() {
 
-        @Override
-        protected void starting(Description description) {
-            testName = description.getMethodName();
-            startTime = LocalDateTime.now();
+        private final Logger logger = Logger.getLogger(MealServiceTest.class.getName());
+
+        private void logInfo(Description description, String status, long nanos) {
+            String testName = description.getMethodName();
+            logger.info(String.format("Test %s %s, spent %d milliseconds",
+                    testName, status, TimeUnit.NANOSECONDS.toMillis(nanos)));
         }
 
         @Override
-        protected void finished(Description description) {
-            LocalDateTime endTime = LocalDateTime.now();
-            StringBuilder builder = new StringBuilder();
-            builder.append(getMethodName())
-                    .append(" finished for ")
-                    .append(startTime.until(endTime, ChronoUnit.MILLIS))
-                    .append(" ms");
-
-            System.out.println(builder);
+        protected void succeeded(long nanos, Description description) {
+            logInfo(description, "succeeded", nanos);
         }
 
-        public String getMethodName() {
-            return testName;
+        @Override
+        protected void failed(long nanos, Throwable e, Description description) {
+            logInfo(description, "failed", nanos);
         }
+
+        @Override
+        protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
+            logInfo(description, "skipped", nanos);
+        }
+
+        @Override
+        protected void finished(long nanos, Description description) {
+            logInfo(description, "finished", nanos);
+        }
+
     };
 
     @Rule
