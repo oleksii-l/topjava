@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.AssumptionViolatedException;
+import javafx.util.Pair;
+import org.junit.AfterClass;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,9 +20,10 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -42,13 +44,12 @@ public class MealServiceTest {
         SLF4JBridgeHandler.install();
     }
 
-
-    private LocalDateTime startTime;
+    private static final Logger logger = Logger.getLogger(MealServiceTest.class.getName());
+    private static List<Pair<String, Long>> statistics = Collections.synchronizedList(new ArrayList<>());
 
     @Rule
     public Stopwatch watcher = new Stopwatch() {
 
-        private final Logger logger = Logger.getLogger(MealServiceTest.class.getName());
 
         private void logInfo(Description description, String status, long nanos) {
             String testName = description.getMethodName();
@@ -57,29 +58,20 @@ public class MealServiceTest {
         }
 
         @Override
-        protected void succeeded(long nanos, Description description) {
-            logInfo(description, "succeeded", nanos);
-        }
-
-        @Override
-        protected void failed(long nanos, Throwable e, Description description) {
-            logInfo(description, "failed", nanos);
-        }
-
-        @Override
-        protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
-            logInfo(description, "skipped", nanos);
-        }
-
-        @Override
         protected void finished(long nanos, Description description) {
             logInfo(description, "finished", nanos);
+            statistics.add(new Pair<>(description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos)));
         }
 
     };
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
+
+    @AfterClass
+    public static void printStatistics() {
+        System.out.println(statistics);
+    }
 
     @Autowired
     private MealService service;

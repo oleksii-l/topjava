@@ -9,7 +9,6 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
-import javax.persistence.Query;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,11 +29,8 @@ public class JpaMealRepositoryImpl implements MealRepository {
             em.persist(meal);
             return meal;
         } else {
-            Meal oldMeal = em.find(Meal.class, meal.getId());
-            if (oldMeal == null || !ifUserOwnsMeal(oldMeal, userId)) {
-                return null;
-            }
-            return em.merge(meal);
+            Meal oldMeal = get(meal.getId(), userId);
+            return oldMeal != null ? em.merge(meal) : null;
         }
     }
 
@@ -42,8 +38,8 @@ public class JpaMealRepositoryImpl implements MealRepository {
     @Override
     @Transactional
     public boolean delete(int id, int userId) {
-        Query query = em.createQuery("DELETE FROM Meal m WHERE m.id=:id AND m.user.id=:user_id");
-        return query.setParameter("id", id)
+        return em.createNamedQuery(Meal.DELETE)
+                .setParameter("id", id)
                 .setParameter("user_id", userId)
                 .executeUpdate() != 0;
     }
@@ -51,7 +47,7 @@ public class JpaMealRepositoryImpl implements MealRepository {
     @Override
     public Meal get(int id, int userId) {
         Meal meal = em.find(Meal.class, id);
-        if (meal == null || !ifUserOwnsMeal(meal, userId)) {
+        if (meal != null && meal.getUser().getId() != userId) {
             return null;
         }
         return meal;
@@ -73,10 +69,4 @@ public class JpaMealRepositoryImpl implements MealRepository {
                 .getResultList();
     }
 
-    private boolean ifUserOwnsMeal(Meal meal, int userId) {
-        if (meal == null || meal.getUser().getId() != userId) {
-            return false;
-        }
-        return true;
-    }
 }
