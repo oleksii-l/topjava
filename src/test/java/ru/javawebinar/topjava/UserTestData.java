@@ -5,7 +5,6 @@ import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
@@ -31,9 +30,7 @@ public class UserTestData {
 
     public static void assertMatchWithMelas(User actual, User expected, Iterable<Meal> expectedMeals) {
         assertThat(actual).isEqualToIgnoringGivenFields(expected, "registered", "roles", "meals");
-        List<Meal> userMeals = actual.getMeals();
-        userMeals.sort((m1, m2) -> m2.getDateTime().compareTo(m1.getDateTime()));
-        MealTestData.assertMatch(userMeals, expectedMeals);
+        MealTestData.assertMatch(actual.getMeals(), expectedMeals);
     }
 
 }
