@@ -8,6 +8,7 @@ import java.util.List;
 
 import static java.time.LocalDateTime.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static ru.javawebinar.topjava.UserTestData.USER;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class MealTestData {
@@ -24,6 +25,11 @@ public class MealTestData {
     public static final Meal ADMIN_MEAL2 = new Meal(ADMIN_MEAL_ID + 1, of(2015, Month.JUNE, 1, 21, 0), "Админ ужин", 1500);
 
     public static final List<Meal> MEALS = Arrays.asList(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
+
+    static {
+        MEALS.forEach(m -> m.setUser(USER));
+    }
+
 
     public static Meal getCreated() {
         return new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "Созданный ужин", 300);
@@ -43,5 +49,17 @@ public class MealTestData {
 
     public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
         assertThat(actual).usingElementComparatorIgnoringFields("user").isEqualTo(expected);
+    }
+
+    public static void assertMatchWithUser(Meal actual, Meal expected) {
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    public static void assertMatchWithUser(Iterable<Meal> actual, Meal... expected) {
+        assertMatchWithUser(actual, Arrays.asList(expected));
+    }
+
+    public static void assertMatchWithUser(Iterable<Meal> actual, Iterable<Meal> expected) {
+        assertThat(actual).usingFieldByFieldElementComparator().isEqualTo(expected);
     }
 }
