@@ -15,4 +15,9 @@ public class DatajapaUserServiceTest extends UserServiceTest {
         assertMatchWithMelas(service.get(USER_ID), USER, MEALS);
     }
 
+    @Test
+    public void getUserWithMealFetch() {
+        assertMatchWithMelas(service.getWithMeals(USER_ID), USER, MEALS);
+    }
+
 }

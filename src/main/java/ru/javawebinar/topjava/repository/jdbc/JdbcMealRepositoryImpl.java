@@ -86,4 +86,9 @@ public abstract class JdbcMealRepositoryImpl implements MealRepository {
                 ROW_MAPPER, userId, convertJava8TimeApi(startDate), convertJava8TimeApi(endDate));
     }
 
+    @Override
+    public Meal getWithUser(int id, int userId) {
+        throw new UnsupportedOperationException();
+    }
+
 }
