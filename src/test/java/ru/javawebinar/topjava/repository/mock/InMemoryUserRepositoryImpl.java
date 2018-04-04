@@ -54,10 +54,6 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public User getWithMeals(int id) {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public User getByEmail(String email) {

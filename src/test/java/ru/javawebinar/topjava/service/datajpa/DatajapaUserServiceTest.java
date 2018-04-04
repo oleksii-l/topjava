@@ -1,19 +1,15 @@
-package ru.javawebinar.topjava.service;
+package ru.javawebinar.topjava.service.datajpa;
 
 import org.junit.Test;
 import org.springframework.test.context.ActiveProfiles;
 import ru.javawebinar.topjava.Profiles;
+import ru.javawebinar.topjava.service.UserServiceTest;
 
 import static ru.javawebinar.topjava.MealTestData.MEALS;
 import static ru.javawebinar.topjava.UserTestData.*;
 
-@ActiveProfiles(profiles = {Profiles.DATAJPA, Profiles.ACTIVE_DB})
+@ActiveProfiles(profiles = {Profiles.DATAJPA})
 public class DatajapaUserServiceTest extends UserServiceTest {
-
-    @Test
-    public void getUserWithMeal() {
-        assertMatchWithMelas(service.get(USER_ID), USER, MEALS);
-    }
 
     @Test
     public void getUserWithMealFetch() {
