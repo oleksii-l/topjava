@@ -96,8 +96,8 @@ public class MealRestControllerTest extends AbstractControllerTest {
     @Test
     public void testGetBetween() throws Exception {
         TestUtil.print(mockMvc.perform(get(REST_URL + "filter")
-                .param("startDate", "2015-05-30T00:00:00")
-                .param("endDate", "2015-05-30T23:30:00"))
+                .param("startDate", "2015-05-30")
+                .param("endDate", "2015-05-30"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(contentJson(
@@ -105,6 +105,19 @@ public class MealRestControllerTest extends AbstractControllerTest {
                         , MealsUtil.createWithExceed(MEAL2, false)
                         , MealsUtil.createWithExceed(MEAL3, false)
 
+                )));
+    }
+
+    @Test
+    public void testGetBetweenTime() throws Exception {
+        TestUtil.print(mockMvc.perform(get(REST_URL + "filter")
+                .param("startTime", "09:00")
+                .param("endTime", "11:00"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(contentJson(
+                        MealsUtil.createWithExceed(MEAL4, true)
+                        , MealsUtil.createWithExceed(MEAL1, false)
                 )));
     }
 }
