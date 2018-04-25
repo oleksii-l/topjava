@@ -10,8 +10,6 @@ import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
-import java.time.LocalDateTime;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -62,20 +60,18 @@ public class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testUpdate() throws Exception {
-        Meal updated = new Meal(MEAL1);
-        updated.setCalories(100);
-        updated.setDescription("some desc");
+        Meal updated = getUpdated();
         mockMvc.perform(put(REST_URL + MEAL1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
                 .andExpect(status().isOk());
 
-        assertMatch(mealService.get(MEAL1_ID, USER_ID), updated);
+        assertMatch(mealService.get(updated.getId(), USER_ID), updated);
     }
 
     @Test
     public void testCreate() throws Exception {
-        Meal expected = new Meal(LocalDateTime.now(), "description", 100);
+        Meal expected = getCreated();
         expected.setUser(ADMIN);
         int saveId = AuthorizedUser.id();
         AuthorizedUser.setId(ADMIN_ID);
@@ -90,7 +86,7 @@ public class MealRestControllerTest extends AbstractControllerTest {
         AuthorizedUser.setId(saveId);
 
         assertMatch(returned, expected);
-        assertMatch(mealService.getAll(ADMIN_ID), expected, ADMIN_MEAL2, ADMIN_MEAL1);
+        assertMatch(mealService.getAll(ADMIN_ID), ADMIN_MEAL2, expected, ADMIN_MEAL1);
     }
 
     @Test
@@ -98,6 +94,7 @@ public class MealRestControllerTest extends AbstractControllerTest {
         TestUtil.print(mockMvc.perform(get(REST_URL + "filter")
                 .param("startDate", "2015-05-30")
                 .param("endDate", "2015-05-30"))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(contentJson(
