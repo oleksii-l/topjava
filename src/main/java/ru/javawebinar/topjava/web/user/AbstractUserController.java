@@ -48,4 +48,10 @@ public abstract class AbstractUserController {
         log.info("getByEmail {}", email);
         return service.getByEmail(email);
     }
+
+    public void updateEnabled(Integer id, Boolean enabled) {
+        User user = get(id);
+        user.setEnabled(enabled);
+        update(user, id);
+    }
 }

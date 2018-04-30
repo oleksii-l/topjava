@@ -1,6 +1,18 @@
 var ajaxUrl = "ajax/admin/users/";
 var datatableApi;
 
+function setup() {
+    $("#user-enable").change(function () {
+        $.ajax({
+            url: ajaxUrl + $(this).parent().parent().attr("id") + "/" + $(this).is(':checked'),
+            type: 'PUT',
+            success: function (data) {
+                alert('User was updated');
+            }
+        });
+    });
+}
+
 // $(document).ready(function () {
 $(function () {
     datatableApi = $("#datatable").DataTable({
@@ -39,4 +51,6 @@ $(function () {
         ]
     });
     makeEditable();
+
+    setup()
 });
