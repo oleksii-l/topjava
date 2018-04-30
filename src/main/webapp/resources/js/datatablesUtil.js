@@ -27,8 +27,10 @@ function deleteRow(id) {
     });
 }
 
-function updateTable() {
-    $.get(ajaxUrl, function (data) {
+function updateTable(url) {
+    var fetchUrl = url ? url : ajaxUrl;
+    $.get(fetchUrl, function (data) {
+        console.log(data)
         datatableApi.clear().rows.add(data).draw();
     });
 }
