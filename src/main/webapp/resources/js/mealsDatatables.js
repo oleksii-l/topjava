@@ -8,6 +8,10 @@ function setupFilter() {
             updateTable(url);
         }
     );
+
+    $("#filter-reset").click(function () {
+        $("#filter-form")[0].reset();
+    });
 }
 
 // $(document).ready(function () {

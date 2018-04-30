@@ -34,6 +34,9 @@
         <button id="meal-filter" class="btn btn-secondary">
             <spring:message code="meal.filter"/>
         </button>
+        <button id="filter-reset" class="btn btn-danger">
+            <spring:message code="meal.filter.reset"/>
+        </button>
 
         <hr>
         <button class="btn btn-primary" onclick="add()">
