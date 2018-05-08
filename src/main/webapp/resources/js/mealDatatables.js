@@ -24,7 +24,12 @@ $(function () {
         "info": true,
         "columns": [
             {
-                "data": "dateTime"
+                "data": "dateTime",
+                "render": function (data, type, row) {
+
+                    return data.replace("T", " ");
+                }
+
             },
             {
                 "data": "description"
@@ -50,9 +55,7 @@ $(function () {
             ]
         ],
         "createdRow": function (row, data, dataIndex) {
-            if (!data.enabled) {
-                $(row).attr("data-userEnabled", false);
-            }
+            $(row).attr("data-mealExceed", data.exceed);
         },
         "initComplete": makeEditable
     });
